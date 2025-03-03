@@ -2,8 +2,8 @@ import { ApplicationCommandOptionType, CommandInteraction, EmbedBuilder, Permiss
 import type Command from '../../interfaces/command';
 
 const ChangeIconCommand: Command = {
-  name: 'icon',
-  description: `Change guild icon`,
+  name: 'banner',
+  description: `Change guild banner`,
   options: [
     {
       name: 'image',
@@ -17,19 +17,23 @@ const ChangeIconCommand: Command = {
       return interaction.reply({ content: 'You do not have permission to use this command.' });
     }
 
-    const serverIcon = interaction.options.get('image')?.attachment;
+    if ((interaction.guild?.premiumSubscriptionCount ?? 0) < 2) {
+      return interaction.reply({ content: 'This command requires the server to be at least level 2 boosted.' });
+    }
+
+    const serverBanner = interaction.options.get('image')?.attachment;
     
-    if (!serverIcon) {
+    if (!serverBanner) {
       return interaction.reply({ content: 'Image not uploaded.' });
     }
     
     const embed = new EmbedBuilder()
       .setColor("White")
-      .setTitle(`Icon Successfully Updated`)
-      .setImage(serverIcon.url)
+      .setTitle(`Banner Successfully Updated`)
+      .setImage(serverBanner.url)
       .setTimestamp();
     try {
-      await interaction.guild?.setIcon(serverIcon.url);
+      await interaction.guild?.setBanner(serverBanner.url);
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       await interaction.reply({ content: 'There was an error while changing the guild icon.', });
