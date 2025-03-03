@@ -1,7 +1,7 @@
 {
     "activity": {
-        "status": "dnd",
-        "name": "All Red",
+        "status": "idle",
+        "name": "/bin/bash",
         "type": "Listening",
         "url": "https://github.com/owosnowy/discordjs-v14-boilerplate"
     }

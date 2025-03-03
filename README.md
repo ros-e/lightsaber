@@ -1,15 +1,7 @@
-# discordjs-v14-boilerplate
-
-To install dependencies:
-
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.21. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+<p align="center">
+<img
+src="./.github/pfp.jpg"
+height="200"
+/>
+<h1 align="center">lightsaber</h1>
+</p>

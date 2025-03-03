@@ -1,42 +1,42 @@
 import { Client, Events, CommandInteraction, Collection, ActivityType, Presence, type PresenceData, type PresenceStatusData } from 'discord.js';
 import fg from 'fast-glob';
 import type Command from '../interfaces/command';
-import { activity } from "../config.json" 
+import { activity } from "../config.json";
+
 class Bot extends Client {
-    public commands: Collection<string, Command> = new Collection(); 
+    public commands: Collection<string, Command> = new Collection();
     public async start(): Promise<void> {
         this.login(process.env.DISCORD_TOKEN);
         this.setMaxListeners(0);
-
         this.once(Events.ClientReady, async (c) => {
             console.log(`Logged in as ${c.user.tag}`);
             c.user.setPresence({
-              activities: [{
-                name: activity.name,
-                type: ActivityType[activity.type as keyof typeof ActivityType],
-                url: activity.url
-              }],
-              status: activity.status as PresenceStatusData
-            })
+                activities: [{
+                    name: activity.name,
+                    type: ActivityType[activity.type as keyof typeof ActivityType],
+                    url: activity.url
+                }],
+                status: activity.status as PresenceStatusData
+            });
             const commandFiles: string[] = await fg(
                 `${__dirname.replace(/\\/g, '/')}/../commands/**/*{.ts,.js}`
             );
 
             for (const file of commandFiles) {
                 const command: Command = (await import(file)).default;
-                this.commands.set(command.name, command); 
-                const guild = this.guilds.cache.get(process.env.GUILD_ID!);
-                if (guild) {
-                    await guild.commands.create({
+                this.commands.set(command.name, command);
+                try {
+                    await this.application?.commands.create({
                         name: command.name,
                         description: command.description,
-                        options: [] 
+                        options: command.options,
                     });
-                    console.log(`Registered {/} commands`);
-                } else {
-                    console.error('Guild not found!');
+                  //  console.log(`Registered /${command.name} command globally`);
+                } catch (error) {
+                    console.error('Error registering command globally:', error);
                 }
             }
+
             this.on(Events.InteractionCreate, async (interaction) => {
                 if (!interaction.isCommand()) return;
 
